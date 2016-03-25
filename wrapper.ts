@@ -5,7 +5,8 @@
 // FF
 
 // Igor Saric
-// MIT license
+
+var global: any = {};
 
 function wrap(selector: string | HTMLElement): Wrapper
 {
@@ -14,12 +15,12 @@ function wrap(selector: string | HTMLElement): Wrapper
 
 function getInstance<T>(name: string): T
 {
-    return <T>window[name];
-}
+    if (global[name])
+    {
+        return global[name];
+    }
 
-function declareInstance(name: string, instance: any)
-{
-    window[name] = instance;
+    return null;
 }
 
 class Wrapper
@@ -82,16 +83,6 @@ class Wrapper
         return new Wrapper(scope, elements);
     }
 
-    private first(): HTMLElement
-    {
-        if (this.any())
-        {
-            return this._elements[0];
-        }
-
-        return null;
-    }
-
     private isTrueForAtLeastOneElement(action: (element: HTMLElement) => boolean): boolean
     {
         var result: boolean = false;
@@ -109,7 +100,21 @@ class Wrapper
 
     // public methods below this point
 
-    // navigation
+    public first(): HTMLElement
+    {
+        if (this.any())
+        {
+            return this._elements[0];
+        }
+
+        return null;
+    }
+
+    public elements(): Array<HTMLElement>
+    {
+        return this._elements;
+    }
+
     public any(): boolean
     {
         return this._elements.length > 0;
@@ -137,45 +142,6 @@ class Wrapper
 
         return this.wrap(null);
     }
-
-    // value
-    public firstValue(): string
-    {
-        var first = this.first();
-        if (first)
-        {
-            var input = <HTMLInputElement>first;
-            if (input && input.value)
-            {
-                return input.value;
-            }
-        }
-
-        return null;
-    }
-
-    public firstId(): string
-    {
-        var first = this.first();
-        if (first && first.id)
-        {
-            return first.id;
-        }
-
-        return null;
-    }
-
-    // style
-    //public style(property: string): string
-    //{
-    //    var first = this.first();
-    //    if (first && first.style)
-    //    {
-    //        return first.style[property];
-    //    }
-
-    //    return null;
-    //}
 
     // visibility
     public visible(): boolean
@@ -240,6 +206,51 @@ class Wrapper
         {
             x.classList.remove(className);
         });
+    }
+
+    public toggleClass(className: string)
+    {
+        if (this.hasClass(className))
+        {
+            this.removeClass(className);
+        }
+        else
+        {
+            this.addClass(className);
+        }
+    }
+
+    public getCss(property: string): string
+    {
+        var first = this.first();
+        if (first && (property in first.style))
+        {
+            return first.style[property];
+        }
+
+        return null;
+    }
+
+    public setCss(property: string, value: string)
+    {
+        this._elements.forEach(x =>
+        {
+            if (property in x.style)
+            {
+                x.style[property] = value;
+            }
+        });
+    }
+
+    public width(): number
+    {
+        var first = this.first();
+        if (first)
+        {
+            return first.offsetWidth;
+        }
+
+        return null;
     }
 
     // html
