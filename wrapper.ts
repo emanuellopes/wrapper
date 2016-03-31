@@ -6,21 +6,9 @@
 
 // Igor Saric
 
-var global: any = {};
-
 function wrap(selector: string | HTMLElement): Wrapper
 {
     return (new Wrapper(document, null)).wrap(selector);
-}
-
-function getInstance<T>(name: string): T
-{
-    if (global[name])
-    {
-        return global[name];
-    }
-
-    return null;
 }
 
 class Wrapper
