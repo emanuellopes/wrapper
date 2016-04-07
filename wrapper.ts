@@ -241,6 +241,28 @@ class Wrapper
         return null;
     }
 
+    public height(): number
+    {
+        var first = this.first();
+        if (first)
+        {
+            return first.offsetHeight;
+        }
+
+        return null;
+    }
+
+    public val(): any
+    {
+        var first = this.first();
+        if (first)
+        {
+            return (<HTMLInputElement>first).value;
+        }
+
+        return null;
+    }
+
     // html
     public setHtml(html: string)
     {
@@ -248,6 +270,26 @@ class Wrapper
         {
             x.innerHTML = html;
         });
+    }
+
+    public getHtml(): string
+    {
+        var first = this.first();
+        if (first)
+        {
+            return first.innerHTML;
+        }
+
+        return null;
+    }
+
+    public replaceInHtml(search: string, replacement: string)
+    {
+        var first = this.first();
+        if (first)
+        {
+            first.innerHTML = first.innerHTML.replace(new RegExp(search, 'g'), replacement);
+        }
     }
 
     // event 
