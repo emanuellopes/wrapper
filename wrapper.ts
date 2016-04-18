@@ -86,9 +86,7 @@ class Wrapper
         return result;
     }
 
-    // public methods below this point
-
-    public first(): HTMLElement
+    private first(): HTMLElement
     {
         if (this.any())
         {
@@ -98,6 +96,20 @@ class Wrapper
         return null;
     }
 
+    private getPropertyValueOfFirst(property: string): any
+    {
+        var first = this.first();
+        if (first)
+        {
+            return first[property];
+        }
+
+        return null;
+    }
+
+    // public methods below this point
+
+    // TODO: maknuti mozda
     public elements(): Array<HTMLElement>
     {
         return this._elements;
@@ -232,38 +244,34 @@ class Wrapper
 
     public width(): number
     {
-        var first = this.first();
-        if (first)
-        {
-            return first.offsetWidth;
-        }
-
-        return null;
+        return this.getPropertyValueOfFirst('offsetWidth');
     }
 
     public height(): number
     {
-        var first = this.first();
-        if (first)
-        {
-            return first.offsetHeight;
-        }
+        return this.getPropertyValueOfFirst('offsetHeight');
+    }
 
-        return null;
+    public left(): number
+    {
+        return this.getPropertyValueOfFirst('offsetLeft');
+    }
+
+    public top(): number
+    {
+        return this.getPropertyValueOfFirst('offsetTop');
     }
 
     public val(): any
     {
-        var first = this.first();
-        if (first)
-        {
-            return (<HTMLInputElement>first).value;
-        }
-
-        return null;
+        return this.getPropertyValueOfFirst('value');
     }
 
-    // html
+    public getHtml(): any
+    {
+        return this.getPropertyValueOfFirst('innerHTML');
+    }
+
     public setHtml(html: string)
     {
         this._elements.forEach(x =>
@@ -272,28 +280,8 @@ class Wrapper
         });
     }
 
-    public getHtml(): string
-    {
-        var first = this.first();
-        if (first)
-        {
-            return first.innerHTML;
-        }
-
-        return null;
-    }
-
-    public replaceInHtml(search: string, replacement: string)
-    {
-        var first = this.first();
-        if (first)
-        {
-            first.innerHTML = first.innerHTML.replace(new RegExp(search, 'g'), replacement);
-        }
-    }
-
     // event 
-    public addEvent(event: string, execute: (event) => void)
+    public on(event: string, execute: (event) => void)
     {
         this._elements.forEach(x =>
         {
