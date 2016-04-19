@@ -96,10 +96,10 @@ class Wrapper
         return null;
     }
 
-    private getPropertyValueOfFirst(property: string): any
+    private getPropertyValueFirstElement(property: string): any
     {
         var first = this.first();
-        if (first)
+        if (first && first[property])
         {
             return first[property];
         }
@@ -244,32 +244,32 @@ class Wrapper
 
     public width(): number
     {
-        return this.getPropertyValueOfFirst('offsetWidth');
+        return this.getPropertyValueFirstElement('offsetWidth');
     }
 
     public height(): number
     {
-        return this.getPropertyValueOfFirst('offsetHeight');
+        return this.getPropertyValueFirstElement('offsetHeight');
     }
 
     public left(): number
     {
-        return this.getPropertyValueOfFirst('offsetLeft');
+        return this.getPropertyValueFirstElement('offsetLeft');
     }
 
     public top(): number
     {
-        return this.getPropertyValueOfFirst('offsetTop');
+        return this.getPropertyValueFirstElement('offsetTop');
     }
 
     public val(): any
     {
-        return this.getPropertyValueOfFirst('value');
+        return this.getPropertyValueFirstElement('value');
     }
 
     public getHtml(): any
     {
-        return this.getPropertyValueOfFirst('innerHTML');
+        return this.getPropertyValueFirstElement('innerHTML');
     }
 
     public setHtml(html: string)
