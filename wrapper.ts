@@ -6,7 +6,7 @@
 
 // Igor Saric
 
-function wrap(selector: string | HTMLElement): Wrapper
+function wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
 {
     return (new Wrapper(document, null)).wrap(selector);
 }
@@ -22,7 +22,7 @@ class Wrapper
         this._elements = elements;
     }
 
-    public wrap(selector: string | HTMLElement): Wrapper
+    public wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
     {
         var elements: Array<HTMLElement> = new Array<HTMLElement>();
 
@@ -30,7 +30,7 @@ class Wrapper
         {
             if (typeof selector === 'string')
             {
-                if (selector.substring(0, 1) == '#')
+                if (selector.substring(0, 1) === '#')
                 {
                     var htmlElement = document.getElementById(selector.substring(1));
                     if (htmlElement)
@@ -42,7 +42,7 @@ class Wrapper
                 {
                     var htmlElements: NodeListOf<Element>;
 
-                    if (selector.substring(0, 1) == '.')
+                    if (selector.substring(0, 1) === '.')
                     {
                         htmlElements = this._scope.getElementsByClassName(selector.substring(1));
                     }
@@ -64,6 +64,10 @@ class Wrapper
             else if (selector instanceof HTMLElement)
             {
                 elements.push(selector);
+            }
+            else if (selector instanceof Array)
+            {
+                elements.push.apply(elements, selector);
             }
         }
 
@@ -96,28 +100,27 @@ class Wrapper
         return null;
     }
 
-    private getPropertyValueFirstElement(property: string): any
+    // public methods below this point
+
+    private prop(propertyName: string): any
     {
         var first = this.first();
-        if (first && first[property])
+        if (first)
         {
-            return first[property];
+            return first[propertyName];
         }
 
         return null;
     }
 
-    // public methods below this point
-
-    // TODO: maknuti mozda
-    public elements(): Array<HTMLElement>
-    {
-        return this._elements;
-    }
-
     public any(): boolean
     {
         return this._elements.length > 0;
+    }
+
+    public except(selector: string): Wrapper
+    {
+        return wrap(this._elements.filter(x => wrap(selector)._elements.indexOf(x) === -1));
     }
 
     public next(): Wrapper
@@ -244,32 +247,32 @@ class Wrapper
 
     public width(): number
     {
-        return this.getPropertyValueFirstElement('offsetWidth');
+        return this.prop('offsetWidth');
     }
 
     public height(): number
     {
-        return this.getPropertyValueFirstElement('offsetHeight');
+        return this.prop('offsetHeight');
     }
 
     public left(): number
     {
-        return this.getPropertyValueFirstElement('offsetLeft');
+        return this.prop('offsetLeft');
     }
 
     public top(): number
     {
-        return this.getPropertyValueFirstElement('offsetTop');
+        return this.prop('offsetTop');
     }
 
     public val(): any
     {
-        return this.getPropertyValueFirstElement('value');
+        return this.prop('value');
     }
 
     public getHtml(): any
     {
-        return this.getPropertyValueFirstElement('innerHTML');
+        return this.prop('innerHTML');
     }
 
     public setHtml(html: string)
