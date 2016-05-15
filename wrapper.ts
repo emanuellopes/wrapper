@@ -263,22 +263,22 @@ class Wrapper
     // positions
     public top(value: number = null): number
     {
-        return this.prop('style.top', value + 'px');
+        return this.prop('style.top', value !== null ? value + 'px' : null);
     }
 
     public right(value: number = null): number
     {
-        return this.prop('style.right', value + 'px');
+        return this.prop('style.right', value !== null ? value + 'px' : null);
     }
 
     public bottom(value: number = null): number
     {
-        return this.prop('style.bottom', value + 'px');
+        return this.prop('style.bottom', value !== null ? value + 'px' : null);
     }
 
     public left(value: number = null): number
     {
-        return this.prop('style.left', value + 'px');
+        return this.prop('style.left', value !== null ? value + 'px' : null);
     }
 
     // strings
