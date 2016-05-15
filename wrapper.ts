@@ -126,7 +126,7 @@ class Wrapper
 
     private px(value: any): string
     {
-        return !isNaN(parseFloat(value)) ? value + 'px' : value !== null ? value : null;
+        return !isNaN(parseFloat(value)) ? value + 'px' : value;
     }
 
     // public methods below this point
