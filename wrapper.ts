@@ -30,7 +30,7 @@ class Wrapper
         {
             if (typeof selector === 'string')
             {
-                if (selector.substring(0, 1) === '#')
+                if (selector.charAt(0) === '#')
                 {
                     var htmlElement = document.getElementById(selector.substring(1));
                     if (htmlElement)
@@ -42,7 +42,7 @@ class Wrapper
                 {
                     var htmlElements: NodeListOf<Element>;
 
-                    if (selector.substring(0, 1) === '.')
+                    if (selector.charAt(0) === '.')
                     {
                         htmlElements = this._scope.getElementsByClassName(selector.substring(1));
                     }
@@ -75,21 +75,6 @@ class Wrapper
         return new Wrapper(scope, elements);
     }
 
-    private isTrueForAtLeastOneElement(action: (element: HTMLElement) => boolean): boolean
-    {
-        var result: boolean = false;
-
-        this._elements.forEach(x => 
-        {
-            if (!result && action(x))
-            {
-                result = true;
-            }
-        });
-
-        return result;
-    }
-
     private first(): HTMLElement
     {
         if (this.any())
@@ -100,27 +85,54 @@ class Wrapper
         return null;
     }
 
-    // public methods below this point
-
-    private prop(propertyName: string): any
+    private shiftProps(element: HTMLElement, props: string, value: any): any
     {
-        var first = this.first();
-        if (first)
+        if (props && element)
         {
-            return first[propertyName];
+            var array = props.split('.');
+            var prop: any = element;
+
+            while (array.length > 1)
+            {
+                prop = prop[array.shift()];
+            }
+
+            if (value === null)
+            {
+                return prop[array.shift()];
+            }
+            else
+            {
+                prop[array.shift()] = value;
+            }
         }
 
         return null;
     }
 
+    private prop(props: string, value: any): any
+    {
+        if (value === null)
+        {
+            return this.shiftProps(this.first(), props, null);
+        }
+        else
+        {
+            this._elements.forEach(x => this.shiftProps(x, props, value));
+        }
+
+        return null;
+    }
+
+    // public methods below this point
     public any(): boolean
     {
         return this._elements.length > 0;
     }
 
-    public except(selector: string): Wrapper
+    public except(selector: Wrapper): Wrapper
     {
-        return wrap(this._elements.filter(x => wrap(selector)._elements.indexOf(x) === -1));
+        return wrap(this._elements.filter(x => selector._elements.indexOf(x) === -1));
     }
 
     public next(): Wrapper
@@ -128,8 +140,7 @@ class Wrapper
         var first = this.first();
         if (first)
         {
-            var next = <HTMLElement>first.nextElementSibling;
-            return this.wrap(next);
+            return this.wrap(<HTMLElement>first.nextElementSibling);
         }
 
         return this.wrap(null);
@@ -149,7 +160,7 @@ class Wrapper
     // visibility
     public visible(): boolean
     {
-        return this.isTrueForAtLeastOneElement(x =>
+        return this._elements.some(x =>
         {
             return x.style.display !== 'none';
         });
@@ -169,24 +180,29 @@ class Wrapper
 
     public show()
     {
-        this._elements.forEach(x => 
-        {
-            x.style.display = '';
-        });
+        this.prop('style.display', '');
     }
 
     public hide()
     {
+        this.prop('style.display', 'none');
+    }
+
+    public remove()
+    {
         this._elements.forEach(x => 
         {
-            x.style.display = 'none';
+            if (x && x.parentNode)
+            {
+                x.parentNode.removeChild(x);
+            }
         });
     }
 
     // classes
     public hasClass(className: string): boolean
     {
-        return this.isTrueForAtLeastOneElement(x =>
+        return this._elements.some(x =>
         {
             return x.classList.contains(className);
         });
@@ -223,72 +239,143 @@ class Wrapper
         }
     }
 
-    public getCss(property: string): string
+    // size
+    public width(value: number = null): number
     {
-        var first = this.first();
-        if (first && (property in first.style))
-        {
-            return first.style[property];
-        }
-
-        return null;
+        return this.prop('offsetWidth', value);
     }
 
-    public setCss(property: string, value: string)
+    public height(value: number = null): number
     {
-        this._elements.forEach(x =>
+        return this.prop('offsetHeight', value);
+    }
+
+    public positionLeft(value: number = null): number
+    {
+        return this.prop('offsetLeft', value);
+    }
+
+    public positionTop(value: number = null): number
+    {
+        return this.prop('offsetTop', value);
+    }
+
+    // positions
+    public top(value: number = null): number
+    {
+        return this.prop('style.top', value + 'px');
+    }
+
+    public right(value: number = null): number
+    {
+        return this.prop('style.right', value + 'px');
+    }
+
+    public bottom(value: number = null): number
+    {
+        return this.prop('style.bottom', value + 'px');
+    }
+
+    public left(value: number = null): number
+    {
+        return this.prop('style.left', value + 'px');
+    }
+
+    // strings
+    public css(property: string, value: string = null): string
+    {
+        return this.prop('style.' + property, value);
+    }
+
+    public val(value: string = null): string
+    {
+        return this.prop('value', value);
+    }
+
+    public html(value: string = null): string
+    {
+        return this.prop('innerHTML', value);
+    }
+
+    public id(value: string = null): string
+    {
+        return this.prop('id', value);
+    }
+
+    public src(value: string = null): string
+    {
+        return this.prop('src', value);
+    }
+
+    private addHtml(html: string, append: boolean)
+    {
+        this._elements.forEach(x => 
         {
-            if (property in x.style)
+            var element = document.createElement('div');
+            element.innerHTML = html;
+
+            for (var i = 0; i < element.childNodes.length; i++)
             {
-                x.style[property] = value;
+                var node = element.childNodes[i];
+                x.insertBefore(node, append ? null : x.firstChild);
             }
         });
     }
 
-    public width(): number
+    public prependHtml(html: string = null)
     {
-        return this.prop('offsetWidth');
+        this.addHtml(html, false);
     }
 
-    public height(): number
+    public appendHtml(html: string = null)
     {
-        return this.prop('offsetHeight');
+        this.addHtml(html, true);
     }
 
-    public left(): number
+    // boolean
+    public disabled(value: boolean = null): boolean
     {
-        return this.prop('offsetLeft');
+        return this.prop('disabled', value);
     }
 
-    public top(): number
+    public checked(value: boolean = null): boolean
     {
-        return this.prop('offsetTop');
+        return this.prop('checked', value);
     }
 
-    public val(): any
+    // translate
+    public translate(x: number, y: number)
     {
-        return this.prop('value');
+        var value = 'translate(' + x + 'px,' + y + 'px)';
+
+        this.css('transform', value);
+        this.css('-moz-transform', value);
+        this.css('-ms-transform', value);
+        this.css('-o-transform', value);
+        this.css('-webkit-transform', value);
     }
 
-    public getHtml(): any
+    public all(): Array<Wrapper>
     {
-        return this.prop('innerHTML');
-    }
-
-    public setHtml(html: string)
-    {
+        var result = new Array<Wrapper>();
         this._elements.forEach(x =>
         {
-            x.innerHTML = html;
+            result.push(wrap(x));
         });
+        return result;
     }
 
     // event 
-    public on(event: string, execute: (event) => void)
+    public on(eventName: string, execute: (event: any, sender: HTMLElement) => void)
     {
         this._elements.forEach(x =>
         {
-            x.addEventListener(event, execute);
+            x.addEventListener(eventName, (event) =>
+            {
+                execute(event, x);
+            });
         });
     }
 }
+
+// keep under 500 lines
