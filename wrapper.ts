@@ -124,6 +124,11 @@ class Wrapper
         return null;
     }
 
+    private px(value: any): string
+    {
+        return !isNaN(parseFloat(value)) ? value + 'px' : value !== null ? value : null;
+    }
+
     // public methods below this point
     public any(): boolean
     {
@@ -239,46 +244,57 @@ class Wrapper
         }
     }
 
+    // offset
+    public offsetWidth(value: number = null): number
+    {
+        return parseInt(this.prop('offsetWidth', this.px(value)));
+    }
+
+    public offsetHeight(value: number = null): number
+    {
+        return parseInt(this.prop('offsetHeight', this.px(value)));
+    }
+
+    public offsetLeft(value: number = null): number
+    {
+        return parseInt(this.prop('offsetLeft', this.px(value)));
+    }
+
+    public offsetTop(value: number = null): number
+    {
+        return parseInt(this.prop('offsetTop', this.px(value)));
+    }
+
     // size
     public width(value: number = null): number
     {
-        return this.prop('offsetWidth', value);
+        return parseInt(this.prop('style.width', this.px(value)));
     }
 
     public height(value: number = null): number
     {
-        return this.prop('offsetHeight', value);
-    }
-
-    public positionLeft(value: number = null): number
-    {
-        return this.prop('offsetLeft', value);
-    }
-
-    public positionTop(value: number = null): number
-    {
-        return this.prop('offsetTop', value);
+        return parseInt(this.prop('style.height', this.px(value)));
     }
 
     // positions
     public top(value: number = null): number
     {
-        return this.prop('style.top', value !== null ? value + 'px' : null);
+        return parseInt(this.prop('style.top', this.px(value)));
     }
 
     public right(value: number = null): number
     {
-        return this.prop('style.right', value !== null ? value + 'px' : null);
+        return parseInt(this.prop('style.right', this.px(value)));
     }
 
     public bottom(value: number = null): number
     {
-        return this.prop('style.bottom', value !== null ? value + 'px' : null);
+        return parseInt(this.prop('style.bottom', this.px(value)));
     }
 
     public left(value: number = null): number
     {
-        return this.prop('style.left', value !== null ? value + 'px' : null);
+        return parseInt(this.prop('style.left', this.px(value)));
     }
 
     // strings
