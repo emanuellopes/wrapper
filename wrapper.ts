@@ -6,9 +6,25 @@
 
 // Igor Saric
 
+interface WrapperPosition
+{
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+}
+
+interface WrapperOffset
+{
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+}
+
 function wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
 {
-    return (new Wrapper(document, null)).wrap(selector);
+    return (new Wrapper(document, undefined)).wrap(selector);
 }
 
 class Wrapper
@@ -71,21 +87,21 @@ class Wrapper
             }
         }
 
-        var scope = elements.length > 0 ? elements[0] : null;
+        var scope = elements.length > 0 ? elements[0] : undefined;
         return new Wrapper(scope, elements);
     }
 
-    private first(): HTMLElement
+    private _first(): HTMLElement
     {
         if (this.any())
         {
             return this._elements[0];
         }
 
-        return null;
+        return undefined;
     }
 
-    private shiftProps(element: HTMLElement, props: string, value: any): any
+    private _splitProps(element: HTMLElement, props: string, value: any): any
     {
         if (props && element)
         {
@@ -97,7 +113,7 @@ class Wrapper
                 prop = prop[array.shift()];
             }
 
-            if (value === null)
+            if (value === undefined)
             {
                 return prop[array.shift()];
             }
@@ -107,29 +123,30 @@ class Wrapper
             }
         }
 
-        return null;
+        return undefined;
     }
 
-    private prop(props: string, value: any): any
+    private _prop(props: string, value: any): any
     {
-        if (value === null)
+        if (value === undefined)
         {
-            return this.shiftProps(this.first(), props, null);
+            return this._splitProps(this._first(), props, undefined);
         }
         else
         {
-            this._elements.forEach(x => this.shiftProps(x, props, value));
+            this._elements.forEach(x => this._splitProps(x, props, value));
         }
 
-        return null;
+        return undefined;
     }
 
-    private px(value: any): string
+    private _px(value: any): string
     {
         return !isNaN(parseFloat(value)) ? value + 'px' : value;
     }
 
     // public methods below this point
+
     public any(): boolean
     {
         return this._elements.length > 0;
@@ -142,24 +159,24 @@ class Wrapper
 
     public next(): Wrapper
     {
-        var first = this.first();
+        var first = this._first();
         if (first)
         {
             return this.wrap(<HTMLElement>first.nextElementSibling);
         }
 
-        return this.wrap(null);
+        return this.wrap(undefined);
     }
 
     public parent(): Wrapper
     {
-        var first = this.first();
+        var first = this._first();
         if (first)
         {
             return this.wrap(first.parentElement);
         }
 
-        return this.wrap(null);
+        return this.wrap(undefined);
     }
 
     // visibility
@@ -185,12 +202,12 @@ class Wrapper
 
     public show()
     {
-        this.prop('style.display', '');
+        this.css('display', '');
     }
 
     public hide()
     {
-        this.prop('style.display', 'none');
+        this.css('display', 'none');
     }
 
     public remove()
@@ -244,86 +261,70 @@ class Wrapper
         }
     }
 
-    // offset
-    public offsetWidth(value: number = null): number
-    {
-        return parseInt(this.prop('offsetWidth', this.px(value)));
-    }
-
-    public offsetHeight(value: number = null): number
-    {
-        return parseInt(this.prop('offsetHeight', this.px(value)));
-    }
-
-    public offsetLeft(value: number = null): number
-    {
-        return parseInt(this.prop('offsetLeft', this.px(value)));
-    }
-
-    public offsetTop(value: number = null): number
-    {
-        return parseInt(this.prop('offsetTop', this.px(value)));
-    }
-
     // size
-    public width(value: number = null): number
+    public width(value?: number): number
     {
-        return parseInt(this.prop('style.width', this.px(value)));
+        return parseInt(this.css('width', this._px(value)));
     }
 
-    public height(value: number = null): number
+    public height(value?: number): number
     {
-        return parseInt(this.prop('style.height', this.px(value)));
+        return parseInt(this.css('height', this._px(value)));
     }
 
-    // positions
-    public top(value: number = null): number
+    public offset(value?: WrapperOffset): WrapperOffset
     {
-        return parseInt(this.prop('style.top', this.px(value)));
+        var coordinates =
+        {
+            top: parseInt(this._prop('offsetTop', this._px(value))),
+            left: parseInt(this._prop('offsetLeft', this._px(value))),
+            width: parseInt(this._prop('offsetWidth', this._px(value))),
+            height: parseInt(this._prop('offsetHeight', this._px(value))),
+        }
+
+        return coordinates;
     }
 
-    public right(value: number = null): number
+    public position(value?: WrapperPosition): WrapperPosition
     {
-        return parseInt(this.prop('style.right', this.px(value)));
-    }
+        var coordinates =
+        {
+            top: parseInt(this._prop('style.top', this._px(value))),
+            left: parseInt(this._prop('style.left', this._px(value))),
+            bottom: parseInt(this._prop('style.bottom', this._px(value))),
+            right: parseInt(this._prop('style.right', this._px(value))), 
+        }
 
-    public bottom(value: number = null): number
-    {
-        return parseInt(this.prop('style.bottom', this.px(value)));
-    }
-
-    public left(value: number = null): number
-    {
-        return parseInt(this.prop('style.left', this.px(value)));
+        return coordinates;
     }
 
     // strings
-    public css(property: string, value: string = null): string
+    public css(property: string, value?: string): string
     {
-        return this.prop('style.' + property, value);
+        return this._prop('style.' + property, value);
     }
 
-    public val(value: string = null): string
+    public val(value?: string): string
     {
-        return this.prop('value', value);
+        return this._prop('value', value);
     }
 
-    public html(value: string = null): string
+    public html(value?: string): string
     {
-        return this.prop('innerHTML', value);
+        return this._prop('innerHTML', value);
     }
 
-    public id(value: string = null): string
+    public id(value?: string): string
     {
-        return this.prop('id', value);
+        return this._prop('id', value);
     }
 
-    public src(value: string = null): string
+    public src(value?: string): string
     {
-        return this.prop('src', value);
+        return this._prop('src', value);
     }
 
-    private addHtml(html: string, append: boolean)
+    private _addHtml(html: string, append: boolean)
     {
         this._elements.forEach(x => 
         {
@@ -333,30 +334,30 @@ class Wrapper
             for (var i = 0; i < element.childNodes.length; i++)
             {
                 var node = element.childNodes[i];
-                x.insertBefore(node, append ? null : x.firstChild);
+                x.insertBefore(node, append ? undefined : x.firstChild);
             }
         });
     }
 
-    public prependHtml(html: string = null)
+    public prependHtml(html?: string)
     {
-        this.addHtml(html, false);
+        this._addHtml(html, false);
     }
 
-    public appendHtml(html: string = null)
+    public appendHtml(html?: string)
     {
-        this.addHtml(html, true);
+        this._addHtml(html, true);
     }
 
     // boolean
-    public disabled(value: boolean = null): boolean
+    public disabled(value?: boolean): boolean
     {
-        return this.prop('disabled', value);
+        return this._prop('disabled', value);
     }
 
-    public checked(value: boolean = null): boolean
+    public checked(value?: boolean): boolean
     {
-        return this.prop('checked', value);
+        return this._prop('checked', value);
     }
 
     // translate
