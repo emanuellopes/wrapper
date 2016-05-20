@@ -276,10 +276,10 @@ class Wrapper
     {
         var coordinates =
         {
-            top: parseInt(this._prop('offsetTop', this._px(value))),
-            left: parseInt(this._prop('offsetLeft', this._px(value))),
-            width: parseInt(this._prop('offsetWidth', this._px(value))),
-            height: parseInt(this._prop('offsetHeight', this._px(value))),
+            top: parseInt(this._prop('offsetTop', this._px(value ? value.top : undefined))),
+            left: parseInt(this._prop('offsetLeft', this._px(value ? value.left : undefined))),
+            width: parseInt(this._prop('offsetWidth', this._px(value ? value.width : undefined))),
+            height: parseInt(this._prop('offsetHeight', this._px(value ? value.height : undefined))),
         }
 
         return coordinates;
@@ -289,10 +289,10 @@ class Wrapper
     {
         var coordinates =
         {
-            top: parseInt(this._prop('style.top', this._px(value))),
-            left: parseInt(this._prop('style.left', this._px(value))),
-            bottom: parseInt(this._prop('style.bottom', this._px(value))),
-            right: parseInt(this._prop('style.right', this._px(value))), 
+            top: parseInt(this.css('top', this._px(value ? value.top : undefined))),
+            left: parseInt(this.css('left', this._px(value ? value.left : undefined))),
+            bottom: parseInt(this.css('bottom', this._px(value ? value.bottom : undefined))),
+            right: parseInt(this.css('right', this._px(value ? value.right : undefined))), 
         }
 
         return coordinates;
