@@ -6,22 +6,6 @@
 
 // Igor Saric
 
-interface WrapperPosition
-{
-    top?: number;
-    right?: number;
-    bottom?: number;
-    left?: number;
-}
-
-interface WrapperOffset
-{
-    top?: number;
-    left?: number;
-    width?: number;
-    height?: number;
-}
-
 function wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
 {
     return (new Wrapper(document, undefined)).wrap(selector);
@@ -272,7 +256,7 @@ class Wrapper
         return parseInt(this.css('height', this._px(value)));
     }
 
-    public offset(value?: WrapperOffset): WrapperOffset
+    public offset(value?: { top?: number, left?: number, width?: number, height?: number })
     {
         var coordinates =
         {
@@ -285,7 +269,7 @@ class Wrapper
         return coordinates;
     }
 
-    public position(value?: WrapperPosition): WrapperPosition
+    public position(value?: { top?: number, left?: number, bottom?: number, right?: number })
     {
         var coordinates =
         {
