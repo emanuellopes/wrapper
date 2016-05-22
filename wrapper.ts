@@ -24,7 +24,7 @@ class Wrapper
 
     public wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
     {
-        var elements: Array<HTMLElement> = new Array<HTMLElement>();
+        var elements: Array<HTMLElement> = [];
 
         if (selector && this._scope)
         {
