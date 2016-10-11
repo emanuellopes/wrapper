@@ -21,8 +21,8 @@ wrap().removeClass(className: string)      // remove class from element
 wrap().toggleClass(className: string)      // toggle class on element
 wrap().width(value?: number): number       // get or set element width
 wrap().height(value?: number): number      // get or set element height
-wrap().offset(value?: {...}): {...}        // get or set element offset { top?: number, left?: number, width?: number, height?: number }
-wrap().position(value?: {...}): {...}      // get or set element position { top?: number, left?: number, width?: number, height?: number }
+wrap().offset(value?: ...): ...            // get or set element offset
+wrap().position(value?: ...): ...          // get or set element position
 wrap().css(property: string, value?: string): string // get or set element css property value
 wrap().val(value?: string): string         // get or set element value
 wrap().html(value?: string): string        // get or set element html
@@ -34,7 +34,7 @@ wrap().disabled(value?: boolean): boolean  // get or set disabled element value
 wrap().checked(value?: boolean): boolean   // get or set checked element value
 wrap().translate(x: number, y: number)     // translate element
 wrap().all(): Array<Wrapper>               // unpack elements
-wrap().on(eventName: string, execute: (event: any, sender: HTMLElement) => void): void // set event on element
+wrap().on(eventName: string, execute: ...): void // set event on element
 
 
 ```
