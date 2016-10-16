@@ -6,25 +6,41 @@
 
 // Igor Saric
 
-function wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
+export function wrap(selector: string | HTMLElement | HTMLElement[]): Wrapper
 {
     return (new Wrapper(document, undefined)).wrap(selector);
 }
 
-class Wrapper
+export interface Position
+{
+    top?: number;
+    left?: number;
+    bottom?: number;
+    right?: number;
+}
+
+export interface Offset
+{
+    top?: number;
+    left?: number;
+    width?: number;
+    height?: number;
+}
+
+export default class Wrapper
 {
     private _scope: Document | HTMLElement;
-    private _elements: Array<HTMLElement>;
+    private _elements: HTMLElement[];
 
-    constructor(scope: Document | HTMLElement, elements: Array<HTMLElement>)
+    constructor(scope: Document | HTMLElement, elements: HTMLElement[])
     {
         this._scope = scope;
         this._elements = elements;
     }
 
-    public wrap(selector: string | HTMLElement | Array<HTMLElement>): Wrapper
+    public wrap(selector: string | HTMLElement | HTMLElement[]): Wrapper
     {
-        var elements: Array<HTMLElement> = [];
+        var elements: HTMLElement[] = [];
 
         if (selector && this._scope)
         {
@@ -127,6 +143,21 @@ class Wrapper
     private _px(value: any): string
     {
         return !isNaN(parseFloat(value)) ? value + 'px' : value;
+    }
+
+    private _addHtml(html: string, append: boolean)
+    {
+        this._elements.forEach(x => 
+        {
+            var element = document.createElement('div');
+            element.innerHTML = html;
+
+            for (var i = 0; i < element.childNodes.length; i++)
+            {
+                var node = element.childNodes[i];
+                x.insertBefore(node, append ? undefined : x.firstChild);
+            }
+        });
     }
 
     // public methods below this point
@@ -256,7 +287,7 @@ class Wrapper
         return parseInt(this.css('height', this._px(value)));
     }
 
-    public offset(value?: { top?: number, left?: number, width?: number, height?: number })
+    public offset(value?: Offset)
     {
         var coordinates =
         {
@@ -269,7 +300,7 @@ class Wrapper
         return coordinates;
     }
 
-    public position(value?: { top?: number, left?: number, bottom?: number, right?: number })
+    public position(value?: Position)
     {
         var coordinates =
         {
@@ -308,21 +339,6 @@ class Wrapper
         return this._prop('src', value);
     }
 
-    private _addHtml(html: string, append: boolean)
-    {
-        this._elements.forEach(x => 
-        {
-            var element = document.createElement('div');
-            element.innerHTML = html;
-
-            for (var i = 0; i < element.childNodes.length; i++)
-            {
-                var node = element.childNodes[i];
-                x.insertBefore(node, append ? undefined : x.firstChild);
-            }
-        });
-    }
-
     public prependHtml(html?: string)
     {
         this._addHtml(html, false);
@@ -356,13 +372,15 @@ class Wrapper
         this.css('-webkit-transform', value);
     }
 
-    public all(): Array<Wrapper>
+    public all(): Wrapper[]
     {
-        var result = new Array<Wrapper>();
+        var result: Wrapper[] = [];
+
         this._elements.forEach(x =>
         {
             result.push(wrap(x));
         });
+
         return result;
     }
 
