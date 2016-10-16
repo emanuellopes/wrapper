@@ -27,6 +27,11 @@ export interface Offset
     height?: number;
 }
 
+export interface EventCallback
+{
+    (event: any, sender: HTMLElement): void;
+}
+
 export default class Wrapper
 {
     private _scope: Document | HTMLElement;
@@ -385,13 +390,13 @@ export default class Wrapper
     }
 
     // event 
-    public on(eventName: string, execute: (event: any, sender: HTMLElement) => void)
+    public on(action: string, callback: EventCallback)
     {
         this._elements.forEach(x =>
         {
-            x.addEventListener(eventName, (event) =>
+            x.addEventListener(action, (event) =>
             {
-                execute(event, x);
+                callback(event, x);
             });
         });
     }
