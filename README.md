@@ -6,6 +6,7 @@ The following methods are supported:
 ```
 wrap("#selector") : Wrapper                              // wrap id
 wrap(".selector") : Wrapper                              // wrap class
+wrap("selector") : Wrapper                               // wrap tag
 wrap(HTMLElement) : Wrapper                              // wrap HTMLElement
 wrap().any() : boolean                                   // selector exists
 wrap().except(selector: Wrapper) : Wrapper               // wrap elements except selector
