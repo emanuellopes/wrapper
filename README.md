@@ -31,7 +31,7 @@ wrap().html(value?: string): string                      // get or set element h
 wrap().id(value?: string): string                        // get or set element id
 wrap().src(value?: string): string                       // get or set element src
 wrap().prependHtml(html?: string)                        // prepend html
-wrap().appendHtml(html?: string)                         // prepend html
+wrap().appendHtml(html?: string)                         // append html
 wrap().disabled(value?: boolean): boolean                // get or set disabled element value
 wrap().checked(value?: boolean): boolean                 // get or set checked element value
 wrap().translate(x: number, y: number)                   // translate element
