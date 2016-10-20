@@ -1,5 +1,5 @@
 # wrapper
-Small TypeScript class that emulates jQuery. The purpose is to provide basic jQuery functionality while keeping the code base as small as possible (around 4KB minified, non-gzipped).
+Small TypeScript class that emulates jQuery. The purpose is to provide basic jQuery DOM manipulation functionality while keeping the code base as small as possible (around 4KB minified, non-gzipped).
 
 The following methods are supported:
 
